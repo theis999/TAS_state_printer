@@ -1,0 +1,8 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.1.0
+Date: 2023-03-13
+  Changes:
+    - Added Settings [filename, frequency, reset, position, inventory, tech, craft]
+    - Added listener for TAS step change
+    - Added State print
+    - Added method to reset file on load
