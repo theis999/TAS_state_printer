@@ -131,7 +131,7 @@ local function update_settings()
     print.craft = settings.global["tas-s-p-craft"].value
     ---@diagnostic enable: assign-type-mismatch
 
-    script.on_nth_tick(nil, nil)
+    script.on_nth_tick(nil)
     if frequency > 0 then
         script.on_nth_tick(frequency, print_state)
     end
@@ -143,7 +143,7 @@ local function change_setting(setting)
         filename = "tas_state/" .. settings.global["tas-s-p-filename"].value .. ".txt"
     elseif setting == "tas-s-p-frequency" then
         frequency = settings.global["tas-s-p-frequency"].value --[[@as uint]]
-        script.on_nth_tick(nil, nil)
+        script.on_nth_tick(nil)
         if frequency > 0 then
             script.on_nth_tick(frequency, print_state)
         end
