@@ -105,6 +105,8 @@ end
 local function handle_task_change(data)
     if game and data and data.task then
         task = data.task
+    elseif game and data and data.step then
+        task = data.step
     end
 end
 
