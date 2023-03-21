@@ -6,11 +6,18 @@ local player
 ---@type uint
 local task = 0
 
+---@type string?
+local tas_name
+---@type string?
+local tas_timestamp
+
 ---@diagnostic disable: assign-type-mismatch
 ---@type boolean
 local reset_file = settings.global["tas-s-p-reset"].value
 ---@type string
-local filename = "tas_state/" .. settings.global["tas-s-p-filename"].value .. ".txt"
+local file_setting = settings.global["tas-s-p-filename"].value
+---@type string
+local filename = "tas_state/" .. file_setting .. ".txt"
 ---@type uint
 local frequency = settings.global["tas-s-p-frequency"].value
 
@@ -88,14 +95,16 @@ end
 
 local function print_state()
     if game then
+        local _filename = tas_name and tas_timestamp and "tas_state/"..tas_name.."/"..file_setting.."_"..tas_timestamp:gsub("%.", "_"):gsub(":", "-")..".txt" or filename
         if reset_file then
             reset_file = false
-            game.write_file(filename, "" , false)
+            game.write_file(_filename, "" , false)
         end
+        player = player or game.connected_players[1]
         if global.state_c then global.state_c = global.state_c + 1
         else global.state_c = 0 end
         game.write_file(
-            filename,
+            _filename,
             "\"State-".. global.state_c .."\": {\n\t\"Tick\": " .. game.tick .. ",\n\t\"Step\": ".. task ..",\n".. sub(tech(), 0, -3) .. "\n},\n",
             true --append
         )
@@ -117,12 +126,15 @@ local function listen_to_tas_interface()
             remote.call("DunRaider-TAS", "get_tas_step_change_id"),
             handle_task_change
         )
+        tas_name = remote.call("DunRaider-TAS", "get_tas_name")
+        tas_timestamp = remote.call("DunRaider-TAS", "get_tas_timestamp")
     end
 end
 
 local function update_settings()
     ---@diagnostic disable: assign-type-mismatch
-    filename = "tas_state/" .. settings.global["tas-s-p-filename"].value .. ".txt"
+    file_setting = settings.global["tas-s-p-filename"].value --[[@as string]]
+    filename = "tas_state/" .. file_setting .. ".txt"
     frequency = settings.global["tas-s-p-frequency"].value --[[@as uint]]
     print = {}
     print.position = settings.global["tas-s-p-position"].value
@@ -140,7 +152,8 @@ end
 local function change_setting(setting)
     ---@diagnostic disable: assign-type-mismatch
     if (setting == "tas-s-p-filename") then
-        filename = "tas_state/" .. settings.global["tas-s-p-filename"].value .. ".txt"
+        file_setting = settings.global["tas-s-p-filename"].value --[[@as string]]
+        filename = "tas_state/" .. file_setting .. ".txt"
     elseif setting == "tas-s-p-frequency" then
         frequency = settings.global["tas-s-p-frequency"].value --[[@as uint]]
         script.on_nth_tick(nil)
@@ -161,6 +174,8 @@ end
 
 script.on_init(function ()
     listen_to_tas_interface()
+    player = game.player or game.players and game.players[1]
+    global.player = player
 end)
 
 script.on_load(function ()
