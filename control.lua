@@ -126,8 +126,8 @@ local function listen_to_tas_interface()
             remote.call("DunRaider-TAS", "get_tas_step_change_id"),
             handle_task_change
         )
-        tas_name = remote.call("DunRaider-TAS", "get_tas_name")
-        tas_timestamp = remote.call("DunRaider-TAS", "get_tas_timestamp")
+        if remote.interfaces["DunRaider-TAS"].tas_name then tas_name = remote.call("DunRaider-TAS", "get_tas_name") end
+        if remote.interfaces["DunRaider-TAS"].get_tas_timestamp then tas_timestamp = remote.call("DunRaider-TAS", "get_tas_timestamp") end
     end
 end
 
