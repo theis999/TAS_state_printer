@@ -101,6 +101,7 @@ local function print_state()
             game.write_file(_filename, "" , false)
         end
         player = player or game.connected_players[1]
+        if not player or player.controller_type ~= defines.controllers.character then return end
         if global.state_c then global.state_c = global.state_c + 1
         else global.state_c = 0 end
         game.write_file(
